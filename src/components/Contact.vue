@@ -5,19 +5,19 @@
         <h1 class="headline">Contact Me</h1>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-text-field
-            v-model="name"
+            v-model="form.name"
             :rules="[v => !!v || 'Name is required']"
             label="Name"
             required
           ></v-text-field>
           <v-text-field
-            v-model="email"
+            v-model="form.email"
             :rules="[v => !!v || 'Email is required', v => /.+@.+\..+/.test(v) || 'E-mail must be valid']"
             label="Email"
             required
           ></v-text-field>
           <v-textarea
-            v-model="message"
+            v-model="form.message"
             :rules="[v => !!v || 'Message is required']"
             label="Message"
             required
@@ -36,25 +36,31 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ContactSection',
   data() {
     return {
-      valid: false,
-      name: '',
-      email: '',
-      message: ''
+        form:{
+            valid: false,
+            name: '',
+            email: '',
+            message: ''
+        }
     };
   },
   methods: {
     submitForm() {
       if (this.$refs.form.validate()) {
+       axios.post('http://localhost:4000/api/sendEmail',this.form)
+       .then(Response=>{
+        alert('Form submitted sucessfully',Response.data)
+       })
+       .catch(error=>{
+        console.log('Error submitting form:',error)
+       })
        
-        console.log('Form Submitted:', {
-          name: this.name,
-          email: this.email,
-          message: this.message
-        });
         
         this.$refs.form.reset();
       }
